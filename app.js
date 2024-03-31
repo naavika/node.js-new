@@ -1,27 +1,36 @@
-const path = require('path');
-
 const express = require('express');
-const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+app.use(express.urlencoded({ extended: true }));
 
-app.use(bodyParser.urlencoded({extended: false}));
+
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'publics')));
 
 
-app.use('/admin', adminRoutes);
-app.use(shopRoutes);
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/index.html'));
+});
 
-
-app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+app.get('/contactus', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/contactus.html'));
 });
 
 
+app.post('/contactus', (req, res) => {
+  
+  console.log(req.body); 
+  res.redirect('/success');
+});
 
 
-app.listen(4000);
+app.get('/success', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/success.html'));
+});
+
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
