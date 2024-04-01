@@ -1,36 +1,25 @@
-const express = require('express');
 const path = require('path');
+
+const express = require('express');
+const bodyParser = require('body-parser');
+
+
+const errorController = require('./controllers/error');
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/index.html'));
-});
+app.use(errorController.get404);
 
-app.get('/contactus', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/contactus.html'));
-});
-
-
-app.post('/contactus', (req, res) => {
-  
-  console.log(req.body); 
-  res.redirect('/success');
-});
-
-
-app.get('/success', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/success.html'));
-});
-
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(4000);
